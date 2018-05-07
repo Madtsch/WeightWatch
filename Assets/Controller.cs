@@ -12,7 +12,7 @@ public class Controller : MonoBehaviour {
     private string sysdate = System.DateTime.Now.ToString("yyyy-dd-MM");
 
     void Start () {
-        Debug.Log("I am here!");
+        //Debug.Log("I am here!");
         weightDate.text = sysdate;
         weightWeight.text = "104.4";
 	}
@@ -27,20 +27,22 @@ public class Controller : MonoBehaviour {
 
     IEnumerator Upload()
     {
-        List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
-        formData.Add(new MultipartFormDataSection("?ww_weight=" + weightWeight.text + "&username=Unity"));
-        //formData.Add(new MultipartFormFileSection("my file data", "myfile.txt"));
+        WWWForm form = new WWWForm();
+        form.AddField("ww_weight", weightWeight.text);
+        form.AddField("username", "Unity");
 
-        UnityWebRequest www = UnityWebRequest.Post("https://apex.oracle.com/pls/apex/mqstest/weightwatch/weight/" + weightDate.text, formData);
-        yield return www.SendWebRequest();
+        using (UnityWebRequest www = UnityWebRequest.Post("https://apex.oracle.com/pls/apex/mqstest/weightwatch/weight/" + weightDate.text, form))
+        {
+            yield return www.SendWebRequest();
 
-        if (www.isNetworkError || www.isHttpError)
-        {
-            Debug.Log(www.error);
-        }
-        else
-        {
-            Debug.Log("Form upload complete!");
+            if (www.isNetworkError || www.isHttpError)
+            {
+                Debug.Log(www.error);
+            }
+            else
+            {
+                Debug.Log("Form upload complete!");
+            }
         }
     }
 }
