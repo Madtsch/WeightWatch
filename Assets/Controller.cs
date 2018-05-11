@@ -6,17 +6,23 @@ using UnityEngine.Networking;
 
 public class Controller : MonoBehaviour {
 
-    public InputField weightDate;
+    public InputField weightMonth;
+    public InputField weightDay;
+    public InputField weightYear;
     public InputField weightWeight;
     public GameObject panel;
-    private string sysdate = System.DateTime.Now.ToString("yyyy-MM-dd");
+    private string sysdateMonth = System.DateTime.Now.ToString("MMM");
+    private string sysdateDay = System.DateTime.Now.ToString("dd");
+    private string sysdateYear = System.DateTime.Now.ToString("yyyy");
     private bool requestFinished;
     private bool requestErrorOccurred;
 
     void Start () {
         // get data from /weightwatch/lastweights
         StartCoroutine(GetRequest("https://apex.oracle.com/pls/apex/mqstest/weightwatch/lastweights"));
-        weightDate.text = sysdate;
+        weightMonth.text = sysdateMonth;
+        weightDay.text = sysdateDay;
+        weightYear.text = sysdateYear;
         weightWeight.text = "104.4";
 	}
 
@@ -38,11 +44,16 @@ public class Controller : MonoBehaviour {
 
     IEnumerator Upload()
     {
+
+        string weightMonthMM = "05";
+
         WWWForm form = new WWWForm();
         form.AddField("ww_weight", weightWeight.text);
         form.AddField("username", "Unity");
 
-        using (UnityWebRequest www = UnityWebRequest.Post("https://apex.oracle.com/pls/apex/mqstest/weightwatch/weight/" + weightDate.text, form))
+        
+
+        using (UnityWebRequest www = UnityWebRequest.Post("https://apex.oracle.com/pls/apex/mqstest/weightwatch/weight/" + weightYear.text + "-" + weightMonthMM + "-" + weightDay.text, form))
         {
             yield return www.SendWebRequest();
 
