@@ -10,7 +10,8 @@ public class Controller : MonoBehaviour {
     public InputField weightDay;
     public InputField weightYear;
     public InputField weightWeight;
-    public GameObject panel;
+    public GameObject mainScreen;
+    public GameObject loginScreen;
     private string sysdateMonth = System.DateTime.Now.ToString("MMM");
     private string sysdateDay = System.DateTime.Now.ToString("dd");
     private string sysdateYear = System.DateTime.Now.ToString("yyyy");
@@ -29,17 +30,34 @@ public class Controller : MonoBehaviour {
     public void SaveData()
     {
         Debug.Log("SaveData()");
-        panel.GetComponent<Image>().CrossFadeColor(Color.blue, 0f, false, true);
-        panel.GetComponent<Image>().CrossFadeColor(Color.black, 2.0f, false, true);
+        mainScreen.GetComponent<Image>().CrossFadeColor(Color.blue, 0f, false, true);
+        mainScreen.GetComponent<Image>().CrossFadeColor(Color.black, 2.0f, false, true);
         StartCoroutine(Upload());
+    }
+
+    public void SwitchScreen()
+    {
+        loginScreen.SetActive(false);
+        mainScreen.SetActive(true);
     }
 
     [System.Serializable]
     public class WWData
     {
-        public float ww_weight;
+        public Items[] items;
+    }
+
+    [System.Serializable]
+    public class Items
+    {
+        public int ww_id;
+        public string ww_raw;
         public string ww_date;
+        public float ww_weight;
+        public string ww_created;
         public string ww_created_by;
+        public string ww_updated;
+        public string ww_updated_by;
     }
 
     IEnumerator Upload()
@@ -84,12 +102,11 @@ public class Controller : MonoBehaviour {
         }
         else
         {
-            // Show results as text
-            //Debug.Log(request.downloadHandler.text);
-            WWData wwData = new WWData();
-            wwData = JsonUtility.FromJson<WWData>(request.downloadHandler.text);
-            Debug.Log(wwData.ww_date);
-            //Debug.Log("Debug: " + wwData["0"].ww_weight);
+            // Get results from json
+            WWData wwData = JsonUtility.FromJson<WWData>(request.downloadHandler.text);
+            // Set last weight as actual weight
+            weightWeight.text = wwData.items[0].ww_weight.ToString("n1");
+            //Debug.Log(wwData.items[0].ww_id);
 
             if (request.responseCode == 200)
             {
