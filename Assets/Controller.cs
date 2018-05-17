@@ -6,6 +6,8 @@ using UnityEngine.Networking;
 
 public class Controller : MonoBehaviour {
 
+    public Debugger Debugger;
+
     public InputField weightMonth;
     public InputField weightDay;
     public InputField weightYear;
@@ -15,7 +17,6 @@ public class Controller : MonoBehaviour {
     private string sysdateMonth = System.DateTime.Now.ToString("MMM");
     private string sysdateDay = System.DateTime.Now.ToString("dd");
     private string sysdateYear = System.DateTime.Now.ToString("yyyy");
-    private bool requestFinished;
     private bool requestErrorOccurred;
 
     void Start () {
@@ -25,6 +26,7 @@ public class Controller : MonoBehaviour {
         weightDay.text = sysdateDay;
         weightYear.text = sysdateYear;
         weightWeight.text = "104.4";
+        Debugger.Log(weightMonth.text + " " + weightDay.text + " " + weightYear.text);
 	}
 
     public void SaveData()
@@ -77,27 +79,26 @@ public class Controller : MonoBehaviour {
 
             if (www.isNetworkError || www.isHttpError)
             {
-                Debug.Log(www.error);
+                Debugger.Log(www.error);
+                Debugger.Log("Request failed (status:" + www.responseCode + ")");
             }
             else
             {
-                Debug.Log("Form upload complete!");
+                Debugger.Log("Form upload complete!");
             }
         }
     }
 
     IEnumerator GetRequest(string uri)
     {
-        requestFinished = false;
         requestErrorOccurred = false;
 
         UnityWebRequest request = UnityWebRequest.Get(uri);
         yield return request.SendWebRequest();
 
-        requestFinished = true;
         if (request.isNetworkError)
         {
-            Debug.Log("Something went wrong, and returned error: " + request.error);
+            Debugger.Log("Something went wrong, and returned error: " + request.error);
             requestErrorOccurred = true;
         }
         else
@@ -106,15 +107,21 @@ public class Controller : MonoBehaviour {
             WWData wwData = JsonUtility.FromJson<WWData>(request.downloadHandler.text);
             // Set last weight as actual weight
             weightWeight.text = wwData.items[0].ww_weight.ToString("n1");
-            //Debug.Log(wwData.items[0].ww_id);
+            Debugger.Log("LastWeight: " + weightWeight.text);
+
+            // display last five dates and weight
+            for (int i = 0; i < wwData.items.Length; i++)
+            {
+                Debugger.Log(wwData.items[i].ww_date + " - " + wwData.items[i].ww_weight);
+            }
 
             if (request.responseCode == 200)
             {
-                Debug.Log("Request finished successfully!");
+                Debugger.Log(uri + " - Request finished successfully!");
             }
             else
             {
-                Debug.Log("Request failed (status:" + request.responseCode + ")");
+                Debugger.Log(uri + "Request failed (status:" + request.responseCode + ")");
                 requestErrorOccurred = true;
             }
 
