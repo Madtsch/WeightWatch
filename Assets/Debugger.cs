@@ -10,6 +10,6 @@ public class Debugger : MonoBehaviour {
     public void Log(string output)
     {
         Debug.Log(output);
-        debugText.text = debugText.text + "\n" + output;
+        debugText.text = output + "\n" + debugText.text;
     }
 }
