@@ -27,7 +27,7 @@ public class Controller : MonoBehaviour {
 
     void Start () {
         // get data from /weightwatch/lastweights
-        StartCoroutine(GetRequest("https://apex.oracle.com/pls/apex/mqstest/weightwatch/lastweights"));
+        StartCoroutine(GetRequest("https://apex.oracle.com/pls/apex/mqstest/weightwatching/lastweights"));
         weightMonth.text = sysdateMonth;
         weightDay.text = sysdateDay;
         weightYear.text = sysdateYear;
@@ -223,7 +223,7 @@ public class Controller : MonoBehaviour {
         form.AddField("ww_weight", weightWeight.text);
         form.AddField("username", "Unity");
 
-        using (UnityWebRequest www = UnityWebRequest.Post("https://apex.oracle.com/pls/apex/mqstest/weightwatch/weight/" + weightYear.text + "-" + weightMonthMM.ToString("00") + "-" + weightDay.text, form))
+        using (UnityWebRequest www = UnityWebRequest.Post("https://apex.oracle.com/pls/apex/mqstest/weightwatching/weight/" + weightYear.text + "-" + weightMonthMM.ToString("00") + "-" + weightDay.text, form))
         {
             yield return www.SendWebRequest();
 
